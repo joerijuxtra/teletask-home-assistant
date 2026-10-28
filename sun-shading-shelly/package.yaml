@@ -1,0 +1,121 @@
+# TeleTask wall buttons -> flags -> Home Assistant -> Shelly Plus 2PM roller shutters.
+#
+# A wall button toggles a TeleTask FLAG. Every change of the flag is one "press":
+# press 1 = move (down when unknown), press 2 = stop, press 3 = the opposite direction.
+# Fully closed -> always open. Copy to /config/packages/ (packages enabled in configuration.yaml).
+#
+# Example with 4 Shelly covers (cover.shade_1 ... cover.shade_4) and 2 buttons:
+# flag 10 = all shades, flag 11 = shade 1 only. Add a helper + automation per button.
+
+cover:
+  - platform: group
+    name: "Shades all"
+    unique_id: shades_all
+    entities:
+      - cover.shade_1
+      - cover.shade_2
+      - cover.shade_3
+      - cover.shade_4
+
+input_select:
+  # Remembers the last direction per button (the flag state itself means nothing).
+  shades_all_direction:
+    name: "Shades all - last direction"
+    options: ["up", "down"]
+    initial: up            # first press ever moves down
+  shade_1_direction:
+    name: "Shade 1 - last direction"
+    options: ["up", "down"]
+    initial: up
+
+script:
+  shades_press:
+    alias: "Shades: handle a button press (move / stop / reverse)"
+    mode: parallel
+    fields:
+      cover_entity:
+        description: "The cover or cover group"
+      direction_helper:
+        description: "The input_select that remembers the last direction"
+    sequence:
+      # Shelly offline? Do nothing and leave the helper as it is
+      # (a group only becomes unavailable when ALL its members are offline).
+      - condition: template
+        value_template: "{{ states(cover_entity) not in ['unavailable', 'unknown'] }}"
+      - choose:
+          # 1) Moving -> stop (the helper keeps the last direction)
+          - conditions:
+              - condition: template
+                value_template: "{{ states(cover_entity) in ['opening', 'closing'] }}"
+            sequence:
+              - action: cover.stop_cover
+                target:
+                  entity_id: "{{ cover_entity }}"
+          # 2) Fully closed -> always open
+          - conditions:
+              - condition: template
+                value_template: "{{ states(cover_entity) == 'closed' }}"
+            sequence:
+              - action: cover.open_cover
+                target:
+                  entity_id: "{{ cover_entity }}"
+              - action: input_select.select_option
+                target:
+                  entity_id: "{{ direction_helper }}"
+                data:
+                  option: "up"
+          # 3) Last move was down -> now up
+          - conditions:
+              - condition: template
+                value_template: "{{ states(direction_helper) == 'down' }}"
+            sequence:
+              - action: cover.open_cover
+                target:
+                  entity_id: "{{ cover_entity }}"
+              - action: input_select.select_option
+                target:
+                  entity_id: "{{ direction_helper }}"
+                data:
+                  option: "up"
+        # 4) Otherwise (last move was up, or unknown) -> down
+        default:
+          - action: cover.close_cover
+            target:
+              entity_id: "{{ cover_entity }}"
+          - action: input_select.select_option
+            target:
+              entity_id: "{{ direction_helper }}"
+            data:
+              option: "down"
+
+automation:
+  - id: shades_flag_10_all
+    alias: "Shades: all via TeleTask flag 10"
+    mode: queued
+    max: 4
+    triggers:
+      - trigger: state
+        entity_id: switch.teletask_1_flag_10
+        # Required: a reconnect of the bridge (unavailable -> on/off) is not a press
+        from: ["on", "off"]
+        to: ["on", "off"]
+    actions:
+      - action: script.shades_press
+        data:
+          cover_entity: cover.shades_all
+          direction_helper: input_select.shades_all_direction
+
+  - id: shades_flag_11_shade_1
+    alias: "Shades: shade 1 via TeleTask flag 11"
+    mode: queued
+    max: 4
+    triggers:
+      - trigger: state
+        entity_id: switch.teletask_1_flag_11
+        from: ["on", "off"]
+        to: ["on", "off"]
+    actions:
+      - action: script.shades_press
+        data:
+          cover_entity: cover.shade_1
+          direction_helper: input_select.shade_1_direction

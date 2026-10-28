@@ -1,0 +1,91 @@
+# Garage door on a TeleTask MOTOR, with its end switches on two digital inputs.
+#
+# jeletask2mqtt gives cover.teletask_1_motor_1, but a MOTOR reports no real position.
+# The end switches tell whether the door is fully open or fully closed.
+# Copy to /config/packages/ (packages enabled in configuration.yaml).
+
+template:
+  - sensor:
+      - name: "Garage door"
+        unique_id: garage_door_position
+        icon: >-
+          {{ 'mdi:garage-variant' if is_state('sensor.teletask_1_input_34', 'CLOSED')
+             else 'mdi:garage-open-variant' }}
+        availability: >-
+          {{ has_value('sensor.teletask_1_input_33') and has_value('sensor.teletask_1_input_34') }}
+        # Inputs report OPEN / CLOSED in capitals; comparisons are case sensitive.
+        state: >-
+          {% if is_state('sensor.teletask_1_input_34', 'CLOSED') %}closed
+          {% elif is_state('sensor.teletask_1_input_33', 'CLOSED') %}open
+          {% else %}in between{% endif %}
+
+automation:
+  - id: garage_door_close_after_sunset
+    alias: "Garage door: close 1 h after sunset (with retry)"
+    description: >-
+      Closes the garage door 1 h after sunset when it is not fully closed, and tries once more
+      after 1 minute (e.g. when the first command arrived while the door was moving).
+    mode: single
+    triggers:
+      - trigger: sun
+        event: sunset
+        offset: "01:00:00"
+    conditions:
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: sensor.teletask_1_input_34   # end switch "fully closed"
+            state: CLOSED
+    actions:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.teletask_1_motor_1
+      - delay: "00:01:00"
+      - if:
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: sensor.teletask_1_input_34
+                state: CLOSED
+        then:
+          - action: cover.close_cover
+            target:
+              entity_id: cover.teletask_1_motor_1
+
+  - id: garage_door_open_alarm
+    alias: "Garage door: alarm flag while open after the retry"
+    description: >-
+      Optional: turns on TeleTask flag 9 (e.g. a message on the wall panels, see
+      ../aurus-panel-message) when the door is still not closed 5 minutes after the sunset
+      routine, and turns it off again when the door is closed.
+    mode: restart
+    triggers:
+      - trigger: sun
+        event: sunset
+        offset: "01:05:00"
+        id: check
+      - trigger: state
+        entity_id: sensor.teletask_1_input_34
+        to: CLOSED
+        id: closed
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: check
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id: sensor.teletask_1_input_34
+                    state: CLOSED
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.teletask_1_flag_9
+          - conditions:
+              - condition: trigger
+                id: closed
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.teletask_1_flag_9

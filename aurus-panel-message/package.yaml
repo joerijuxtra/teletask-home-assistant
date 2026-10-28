@@ -1,0 +1,62 @@
+# Show a Home Assistant state as a message on a TeleTask (Aurus) wall panel.
+#
+# Method 1 (used on the author's installation): Home Assistant keeps a TeleTask FLAG equal
+# to a binary sensor; a PROSOFT logic function shows the message while the flag is on.
+# Method 2: send the text directly with a jeletask2mqtt DISPLAYMESSAGE (see README.md).
+#
+# Copy to /config/packages/ (packages enabled in configuration.yaml).
+
+automation:
+  - id: panel_message_vacation_flag
+    alias: "Panel message: vacation → TeleTask flag 15"
+    description: >-
+      Keeps flag 15 equal to binary_sensor.vacation_active. Triggers on both sides, so the flag
+      is set again after a reconnect of jeletask2mqtt (unavailable → on/off) or when someone
+      changes the flag in the TeleTask app.
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.vacation_active      # any on/off entity of your own
+        to: ["on", "off"]
+      - trigger: state
+        entity_id: switch.teletask_1_flag_15
+        to: ["on", "off"]
+      - trigger: homeassistant
+        event: start
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ has_value('binary_sensor.vacation_active') and has_value('switch.teletask_1_flag_15')
+             and states('switch.teletask_1_flag_15') != states('binary_sensor.vacation_active') }}
+    actions:
+      - action: "switch.turn_{{ states('binary_sensor.vacation_active') }}"
+        target:
+          entity_id: switch.teletask_1_flag_15
+
+script:
+  # Method 2: needs a DISPLAYMESSAGE entry in jeletask2mqtt's config.json (see README.md).
+  panel_message_send:
+    alias: "Panel message: send text to the wall panels"
+    icon: mdi:message-text
+    mode: queued
+    fields:
+      line1:
+        description: "First line (max 16 characters)"
+        example: "ON VACATION"
+      line2:
+        description: "Second line (max 16 characters)"
+        example: "Heating on night"
+      kind:
+        description: "message or alarm"
+        example: "message"
+      beeps:
+        description: "Number of beeps"
+        example: 1
+    sequence:
+      - action: mqtt.publish
+        data:
+          topic: teletask2mqtt/1/displaymessage/1/set
+          payload: >-
+            {{ {'message_line1': line1[:16], 'message_line2': (line2 | default(''))[:16],
+                'message_type': kind | default('message'),
+                'message_beeps': (beeps | default(1)) | int} | tojson }}

@@ -1,0 +1,31 @@
+{
+  "type": "MICROS_PLUS",
+  "componentsTypes": {
+    "RELAY": [
+      { "number": 14, "description": "Heating circulation pump", "type": "SWITCH" },
+      { "number": 33, "description": "Valve office 2", "type": "SWITCH" },
+      { "number": 34, "description": "Valve bathroom 2", "type": "SWITCH" },
+      { "number": 35, "description": "Valve living", "type": "SWITCH" },
+      { "number": 36, "description": "Valve bedroom 1", "type": "SWITCH" },
+      { "number": 37, "description": "Valve bedroom 2", "type": "SWITCH" },
+      { "number": 38, "description": "Valve bedroom 3", "type": "SWITCH" },
+      { "number": 39, "description": "Valve bathroom 1", "type": "SWITCH" },
+      { "number": 48, "description": "Valve office 1", "type": "SWITCH" }
+    ],
+    "SENSOR": [
+      { "number": 1, "description": "Office 2 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 2, "description": "Bathroom 2 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 3, "description": "Living thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 4, "description": "Bedroom 1 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 5, "description": "Bedroom 2 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 6, "description": "Bedroom 3 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 7, "description": "Bathroom 1 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 8, "description": "Boiler temperature", "type": "TEMPERATURE", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 9, "description": "Office 1 thermostat", "type": "TEMPERATURECONTROL", "ha_modes": "heat,off", "ha_min_temp": 5, "ha_fan_modes": "", "ha_preset_modes": "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO", "ha_unit_of_measurement": "°C", "device": "Heating" },
+      { "number": 10, "description": "Outside temperature", "type": "TEMPERATURE", "ha_unit_of_measurement": "°C", "device": "Heating" }
+    ],
+    "FLAG": [
+      { "number": 15, "description": "HA Vacation flag" }
+    ]
+  }
+}

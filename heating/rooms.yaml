@@ -1,0 +1,60 @@
+# Your TeleTask heating setup. Run `python generate.py` after changing this file.
+#
+# Every room is a TeleTask sensor configured as "TEMPERATURECONTROL" in jeletask2mqtt
+# (-> climate.teletask_<central_id>_sensor_<sensor>) and, optionally, the relay that drives
+# its radiator valve (configured as "SWITCH" -> switch.teletask_<central_id>_relay_<valve_relay>).
+# The central drives valves and pump itself; Home Assistant only reads them.
+
+central_id: 1                 # TELETASK_CENTRAL_ID of jeletask2mqtt
+mqtt_prefix: teletask2mqtt    # TELETASK_MQTT_PREFIX of jeletask2mqtt
+
+pump_relay: 14                # circulation pump relay (SWITCH); remove to skip pump/valve statistics
+boiler_sensor: 8              # optional TEMPERATURE sensor shown next to the pump (e.g. boiler)
+outside_sensor: 10            # optional outside TEMPERATURE sensor for the charts
+
+# Workday integration (Settings -> Devices & services -> Add -> Workday) for your country:
+# on a weekday that is a public holiday, the rooms follow their SUNDAY blocks.
+workday_sensor: binary_sensor.workday_sensor
+
+# Notify service for "pump runs without heat demand" (e.g. notify.mobile_app_<your_phone>).
+notify_service: notify.notify
+
+# Optional TeleTask FLAG that follows "vacation active", e.g. to show a message on a wall
+# panel via a PROSOFT logic function (see ../aurus-panel-message). Remove to skip.
+vacation_flag: 15
+
+# Labels of the presets as configured in jeletask2mqtt ("ha_preset_modes"):
+# "Manual=MANUAL,Day=DAY,Night=NIGHT,Eco=ECO"
+preset_labels:
+  manual: Manual
+  day: Day
+  night: Night
+  eco: Eco
+
+dashboard_path: heating       # URL path of the dashboard (/heating/...)
+
+rooms:
+  - name: Living & kitchen
+    sensor: 3
+    valve_relay: 35
+  - name: Office 1
+    sensor: 9
+    valve_relay: 48
+  - name: Office 2
+    sensor: 1
+    valve_relay: 33
+  - name: Bedroom 1
+    sensor: 4
+    valve_relay: 36
+  - name: Bedroom 2
+    sensor: 5
+    valve_relay: 37
+  - name: Bedroom 3
+    sensor: 6
+    valve_relay: 38
+  - name: Bathroom 1
+    sensor: 7
+    valve_relay: 39
+  - name: Bathroom 2
+    sensor: 2
+    valve_relay: 34
