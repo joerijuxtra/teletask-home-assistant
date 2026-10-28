@@ -7,6 +7,7 @@ README explaining the TeleTask (PROSOFT) and jeletask2mqtt side.
 
 | Example | What it does |
 |---|---|
+| [jeletask2mqtt-addon](jeletask2mqtt-addon) | **Start here on Home Assistant OS:** run jeletask2mqtt as a local add-on next to Mosquitto, step by step, no separate Docker host needed. |
 | [heating](heating) | Room thermostats: presets, setpoints, preset temperatures, week schedules per room, public holidays, vacations, heat demand and pump statistics, a 3-tab dashboard. Generated from a list of your rooms. |
 | [aurus-panel-message](aurus-panel-message) | Show a Home Assistant state (e.g. "on vacation") as a message on the Aurus wall panels. |
 | [sun-shading-shelly](sun-shading-shelly) | TeleTask wall buttons → flags → Shelly Plus 2PM roller shutters (move / stop / reverse), with a hardware fallback. |
@@ -14,8 +15,8 @@ README explaining the TeleTask (PROSOFT) and jeletask2mqtt side.
 
 ## Before you start
 
-- Install jeletask2mqtt and connect it to your MQTT broker; on Home Assistant OS it can run as a local add-on (see
-  its README). Every TeleTask function you use must be in its `config.json`.
+- Install jeletask2mqtt and connect it to your MQTT broker; on Home Assistant OS see
+  [jeletask2mqtt-addon](jeletask2mqtt-addon). Every TeleTask function you use must be in its `config.json`.
 - Enable packages in `configuration.yaml`:
 
   ```yaml

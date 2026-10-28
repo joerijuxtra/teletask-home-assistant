@@ -1,0 +1,8 @@
+name: "Jeletask2MQTT"
+description: "TeleTask DoIP to MQTT bridge (ridiekel/jeletask)"
+version: "1.0.0"
+slug: "jeletask_mqtt_bridge"
+arch:
+  - amd64
+startup: services
+boot: auto

@@ -1,0 +1,15 @@
+{
+  "type": "MICROS_PLUS",
+  "componentsTypes": {
+    "RELAY": [
+      { "number": 1, "description": "Hall light", "type": "LIGHT" },
+      { "number": 14, "description": "Heating pump", "type": "SWITCH" }
+    ],
+    "FLAG": [
+      { "number": 10, "description": "Example flag" }
+    ],
+    "SENSOR": [
+      { "number": 10, "description": "Outside temperature", "type": "TEMPERATURE", "ha_unit_of_measurement": "°C" }
+    ]
+  }
+}
